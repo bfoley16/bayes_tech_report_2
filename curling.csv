@@ -1,0 +1,312 @@
+CompetitionName,MatchID,EndID,PowerPlay,USWin,Points
+Beijing 2022 Olympic Winter Games,1,1,FALSE,1,0
+Beijing 2022 Olympic Winter Games,1,2,FALSE,1,3
+Beijing 2022 Olympic Winter Games,1,3,FALSE,1,4
+Beijing 2022 Olympic Winter Games,1,4,FALSE,1,4
+Beijing 2022 Olympic Winter Games,1,5,FALSE,1,3
+Beijing 2022 Olympic Winter Games,1,6,FALSE,1,0
+Beijing 2022 Olympic Winter Games,1,7,TRUE,1,3
+Beijing 2022 Olympic Winter Games,1,8,FALSE,1,2
+Beijing 2022 Olympic Winter Games,2,1,FALSE,0,4
+Beijing 2022 Olympic Winter Games,2,2,FALSE,0,2
+Beijing 2022 Olympic Winter Games,2,3,FALSE,0,4
+Beijing 2022 Olympic Winter Games,2,4,FALSE,0,4
+Beijing 2022 Olympic Winter Games,2,5,FALSE,0,4
+Beijing 2022 Olympic Winter Games,2,6,FALSE,0,3
+Beijing 2022 Olympic Winter Games,2,7,FALSE,0,4
+Beijing 2022 Olympic Winter Games,2,8,TRUE,0,4
+Beijing 2022 Olympic Winter Games,3,1,FALSE,0,4
+Beijing 2022 Olympic Winter Games,3,2,FALSE,0,4
+Beijing 2022 Olympic Winter Games,3,3,FALSE,0,4
+Beijing 2022 Olympic Winter Games,3,4,FALSE,0,4
+Beijing 2022 Olympic Winter Games,3,5,FALSE,0,0
+Beijing 2022 Olympic Winter Games,3,6,FALSE,0,4
+Beijing 2022 Olympic Winter Games,3,7,TRUE,0,4
+Beijing 2022 Olympic Winter Games,3,8,FALSE,0,4
+Beijing 2022 Olympic Winter Games,4,1,FALSE,1,4
+Beijing 2022 Olympic Winter Games,4,2,FALSE,1,3
+Beijing 2022 Olympic Winter Games,4,3,FALSE,1,4
+Beijing 2022 Olympic Winter Games,4,4,FALSE,1,4
+Beijing 2022 Olympic Winter Games,4,5,FALSE,1,3
+Beijing 2022 Olympic Winter Games,4,6,FALSE,1,2
+Beijing 2022 Olympic Winter Games,4,7,TRUE,1,4
+Beijing 2022 Olympic Winter Games,4,8,FALSE,1,2
+Beijing 2022 Olympic Winter Games,4,9,FALSE,1,3
+Beijing 2022 Olympic Winter Games,5,1,FALSE,1,3
+Beijing 2022 Olympic Winter Games,5,2,FALSE,1,4
+Beijing 2022 Olympic Winter Games,5,3,FALSE,1,4
+Beijing 2022 Olympic Winter Games,5,4,FALSE,1,3
+Beijing 2022 Olympic Winter Games,5,5,FALSE,1,4
+Beijing 2022 Olympic Winter Games,5,6,FALSE,1,2
+Beijing 2022 Olympic Winter Games,5,7,TRUE,1,0
+Beijing 2022 Olympic Winter Games,5,8,FALSE,1,4
+Beijing 2022 Olympic Winter Games,6,1,FALSE,0,3
+Beijing 2022 Olympic Winter Games,6,2,FALSE,0,3
+Beijing 2022 Olympic Winter Games,6,3,FALSE,0,3
+Beijing 2022 Olympic Winter Games,6,4,FALSE,0,4
+Beijing 2022 Olympic Winter Games,6,5,FALSE,0,3
+Beijing 2022 Olympic Winter Games,6,6,TRUE,0,4
+Beijing 2022 Olympic Winter Games,6,7,FALSE,0,3
+Beijing 2022 Olympic Winter Games,7,1,FALSE,0,4
+Beijing 2022 Olympic Winter Games,7,2,FALSE,0,4
+Beijing 2022 Olympic Winter Games,7,3,FALSE,0,3
+Beijing 2022 Olympic Winter Games,7,4,FALSE,0,4
+Beijing 2022 Olympic Winter Games,7,5,FALSE,0,4
+Beijing 2022 Olympic Winter Games,7,6,FALSE,0,2
+Beijing 2022 Olympic Winter Games,7,7,TRUE,0,3
+Beijing 2022 Olympic Winter Games,7,8,FALSE,0,4
+Beijing 2022 Olympic Winter Games,8,1,FALSE,0,4
+Beijing 2022 Olympic Winter Games,8,2,FALSE,0,3
+Beijing 2022 Olympic Winter Games,8,3,FALSE,0,4
+Beijing 2022 Olympic Winter Games,8,4,FALSE,0,3
+Beijing 2022 Olympic Winter Games,8,5,FALSE,0,2
+Beijing 2022 Olympic Winter Games,8,6,FALSE,0,4
+Beijing 2022 Olympic Winter Games,8,7,TRUE,0,3
+Beijing 2022 Olympic Winter Games,8,8,FALSE,0,3
+Beijing 2022 Olympic Winter Games,9,1,FALSE,0,4
+Beijing 2022 Olympic Winter Games,9,2,FALSE,0,2
+Beijing 2022 Olympic Winter Games,9,3,FALSE,0,4
+Beijing 2022 Olympic Winter Games,9,4,FALSE,0,4
+Beijing 2022 Olympic Winter Games,9,5,TRUE,0,4
+Beijing 2022 Olympic Winter Games,9,6,FALSE,0,4
+Beijing 2022 Olympic Winter Games,9,7,FALSE,0,0
+Beijing 2022 Olympic Winter Games,9,8,FALSE,0,4
+World Mixed Doubles Curling Championship 2023,1,1,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,1,2,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,1,3,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,1,4,FALSE,1,3
+World Mixed Doubles Curling Championship 2023,1,5,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,1,6,FALSE,1,2
+World Mixed Doubles Curling Championship 2023,1,7,TRUE,1,4
+World Mixed Doubles Curling Championship 2023,1,8,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,1,9,FALSE,1,3
+World Mixed Doubles Curling Championship 2023,2,1,FALSE,0,4
+World Mixed Doubles Curling Championship 2023,2,2,FALSE,0,4
+World Mixed Doubles Curling Championship 2023,2,3,FALSE,0,4
+World Mixed Doubles Curling Championship 2023,2,4,FALSE,0,4
+World Mixed Doubles Curling Championship 2023,2,5,FALSE,0,3
+World Mixed Doubles Curling Championship 2023,2,6,FALSE,0,0
+World Mixed Doubles Curling Championship 2023,2,7,TRUE,0,4
+World Mixed Doubles Curling Championship 2023,2,8,FALSE,0,3
+World Mixed Doubles Curling Championship 2023,3,1,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,3,2,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,3,3,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,3,4,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,3,5,FALSE,1,0
+World Mixed Doubles Curling Championship 2023,3,6,FALSE,1,1
+World Mixed Doubles Curling Championship 2023,3,7,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,4,1,FALSE,1,3
+World Mixed Doubles Curling Championship 2023,4,2,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,4,3,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,4,4,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,4,5,FALSE,1,0
+World Mixed Doubles Curling Championship 2023,4,6,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,5,1,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,5,2,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,5,3,FALSE,1,1
+World Mixed Doubles Curling Championship 2023,5,4,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,5,5,FALSE,1,0
+World Mixed Doubles Curling Championship 2023,5,6,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,6,1,FALSE,1,1
+World Mixed Doubles Curling Championship 2023,6,2,FALSE,1,1
+World Mixed Doubles Curling Championship 2023,6,3,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,6,4,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,6,5,FALSE,1,0
+World Mixed Doubles Curling Championship 2023,6,6,TRUE,1,4
+World Mixed Doubles Curling Championship 2023,7,1,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,7,2,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,7,3,FALSE,1,3
+World Mixed Doubles Curling Championship 2023,7,4,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,7,5,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,7,6,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,7,7,TRUE,1,4
+World Mixed Doubles Curling Championship 2023,7,8,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,8,1,FALSE,1,3
+World Mixed Doubles Curling Championship 2023,8,2,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,8,3,FALSE,1,0
+World Mixed Doubles Curling Championship 2023,8,4,FALSE,1,2
+World Mixed Doubles Curling Championship 2023,8,5,FALSE,1,3
+World Mixed Doubles Curling Championship 2023,8,6,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,8,7,TRUE,1,4
+World Mixed Doubles Curling Championship 2023,8,8,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,9,1,FALSE,0,2
+World Mixed Doubles Curling Championship 2023,9,2,FALSE,0,4
+World Mixed Doubles Curling Championship 2023,9,3,FALSE,0,3
+World Mixed Doubles Curling Championship 2023,9,4,FALSE,0,2
+World Mixed Doubles Curling Championship 2023,9,5,FALSE,0,4
+World Mixed Doubles Curling Championship 2023,9,6,FALSE,0,4
+World Mixed Doubles Curling Championship 2023,9,7,FALSE,0,4
+World Mixed Doubles Curling Championship 2023,9,8,TRUE,0,4
+World Mixed Doubles Curling Championship 2023,9,9,FALSE,0,4
+World Mixed Doubles Curling Championship 2023,10,1,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,10,2,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,10,3,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,10,4,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,10,5,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,10,6,FALSE,1,2
+World Mixed Doubles Curling Championship 2023,10,7,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,10,8,TRUE,1,4
+World Mixed Doubles Curling Championship 2023,11,1,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,11,2,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,11,3,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,11,4,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,11,5,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,11,6,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,11,7,FALSE,1,0
+World Mixed Doubles Curling Championship 2023,11,8,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,12,1,FALSE,1,3
+World Mixed Doubles Curling Championship 2023,12,2,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,12,3,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,12,4,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,12,5,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,12,6,FALSE,1,4
+World Mixed Doubles Curling Championship 2023,12,7,TRUE,1,0
+World Mixed Doubles Curling Championship 2024,1,1,FALSE,0,3
+World Mixed Doubles Curling Championship 2024,1,2,FALSE,0,3
+World Mixed Doubles Curling Championship 2024,1,3,FALSE,0,4
+World Mixed Doubles Curling Championship 2024,1,4,FALSE,0,4
+World Mixed Doubles Curling Championship 2024,1,5,FALSE,0,4
+World Mixed Doubles Curling Championship 2024,1,6,FALSE,0,4
+World Mixed Doubles Curling Championship 2024,1,7,TRUE,0,4
+World Mixed Doubles Curling Championship 2024,1,8,FALSE,0,4
+World Mixed Doubles Curling Championship 2024,2,1,FALSE,1,0
+World Mixed Doubles Curling Championship 2024,2,2,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,2,3,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,2,4,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,2,5,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,2,6,TRUE,1,4
+World Mixed Doubles Curling Championship 2024,2,7,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,2,8,FALSE,1,3
+World Mixed Doubles Curling Championship 2024,3,1,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,3,2,FALSE,1,2
+World Mixed Doubles Curling Championship 2024,3,3,FALSE,1,1
+World Mixed Doubles Curling Championship 2024,3,4,FALSE,1,0
+World Mixed Doubles Curling Championship 2024,3,5,TRUE,1,3
+World Mixed Doubles Curling Championship 2024,3,6,FALSE,1,3
+World Mixed Doubles Curling Championship 2024,3,7,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,3,8,FALSE,1,3
+World Mixed Doubles Curling Championship 2024,4,1,FALSE,1,3
+World Mixed Doubles Curling Championship 2024,4,2,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,4,3,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,4,4,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,4,5,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,4,6,TRUE,1,0
+World Mixed Doubles Curling Championship 2024,4,7,FALSE,1,2
+World Mixed Doubles Curling Championship 2024,4,8,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,5,1,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,5,2,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,5,3,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,5,4,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,5,5,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,5,6,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,5,7,TRUE,1,0
+World Mixed Doubles Curling Championship 2024,5,8,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,6,1,FALSE,0,3
+World Mixed Doubles Curling Championship 2024,6,2,FALSE,0,4
+World Mixed Doubles Curling Championship 2024,6,3,FALSE,0,3
+World Mixed Doubles Curling Championship 2024,6,4,FALSE,0,4
+World Mixed Doubles Curling Championship 2024,6,5,FALSE,0,4
+World Mixed Doubles Curling Championship 2024,6,6,FALSE,0,4
+World Mixed Doubles Curling Championship 2024,6,7,TRUE,0,4
+World Mixed Doubles Curling Championship 2024,6,8,FALSE,0,4
+World Mixed Doubles Curling Championship 2024,7,1,FALSE,0,4
+World Mixed Doubles Curling Championship 2024,7,2,FALSE,0,4
+World Mixed Doubles Curling Championship 2024,7,3,FALSE,0,3
+World Mixed Doubles Curling Championship 2024,7,4,FALSE,0,4
+World Mixed Doubles Curling Championship 2024,7,5,FALSE,0,4
+World Mixed Doubles Curling Championship 2024,7,6,TRUE,0,3
+World Mixed Doubles Curling Championship 2024,7,7,FALSE,0,4
+World Mixed Doubles Curling Championship 2024,7,8,FALSE,0,4
+World Mixed Doubles Curling Championship 2024,8,1,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,8,2,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,8,3,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,8,4,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,8,5,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,8,6,FALSE,1,4
+World Mixed Doubles Curling Championship 2024,9,1,FALSE,0,4
+World Mixed Doubles Curling Championship 2024,9,2,FALSE,0,4
+World Mixed Doubles Curling Championship 2024,9,3,FALSE,0,4
+World Mixed Doubles Curling Championship 2024,9,4,FALSE,0,2
+World Mixed Doubles Curling Championship 2024,9,5,FALSE,0,4
+World Mixed Doubles Curling Championship 2024,9,6,TRUE,0,4
+World Mixed Doubles Curling Championship 2024,9,7,FALSE,0,3
+World Mixed Doubles Curling Championship 2025,1,1,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,1,2,FALSE,1,3
+World Mixed Doubles Curling Championship 2025,1,3,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,1,4,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,1,5,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,1,6,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,2,1,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,2,2,FALSE,0,3
+World Mixed Doubles Curling Championship 2025,2,3,FALSE,0,3
+World Mixed Doubles Curling Championship 2025,2,4,FALSE,0,3
+World Mixed Doubles Curling Championship 2025,2,5,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,2,6,TRUE,0,4
+World Mixed Doubles Curling Championship 2025,2,7,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,2,8,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,3,1,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,3,2,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,3,3,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,3,4,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,3,5,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,3,6,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,4,1,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,4,2,FALSE,1,3
+World Mixed Doubles Curling Championship 2025,4,3,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,4,4,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,4,5,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,4,6,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,4,7,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,4,8,TRUE,1,4
+World Mixed Doubles Curling Championship 2025,5,1,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,5,2,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,5,3,FALSE,1,2
+World Mixed Doubles Curling Championship 2025,5,4,FALSE,1,3
+World Mixed Doubles Curling Championship 2025,5,5,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,5,6,FALSE,1,3
+World Mixed Doubles Curling Championship 2025,5,7,TRUE,1,4
+World Mixed Doubles Curling Championship 2025,5,8,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,6,1,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,6,2,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,6,3,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,6,4,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,6,5,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,6,6,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,7,1,FALSE,0,3
+World Mixed Doubles Curling Championship 2025,7,2,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,7,3,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,7,4,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,7,5,FALSE,0,3
+World Mixed Doubles Curling Championship 2025,7,6,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,7,7,TRUE,0,4
+World Mixed Doubles Curling Championship 2025,7,8,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,8,1,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,8,2,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,8,3,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,8,4,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,8,5,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,8,6,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,8,7,TRUE,0,4
+World Mixed Doubles Curling Championship 2025,8,8,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,9,1,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,9,2,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,9,3,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,9,4,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,9,5,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,9,6,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,10,1,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,10,2,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,10,3,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,10,4,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,10,5,TRUE,0,3
+World Mixed Doubles Curling Championship 2025,10,6,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,10,7,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,10,8,FALSE,0,4
+World Mixed Doubles Curling Championship 2025,11,1,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,11,2,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,11,3,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,11,4,FALSE,1,3
+World Mixed Doubles Curling Championship 2025,11,5,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,11,6,FALSE,1,4
+World Mixed Doubles Curling Championship 2025,11,7,TRUE,1,4
+World Mixed Doubles Curling Championship 2025,11,8,FALSE,1,4

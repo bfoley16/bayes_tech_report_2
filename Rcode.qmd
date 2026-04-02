@@ -1,0 +1,131 @@
+---
+title: "Rcode"
+format: html
+---
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+
+curlin <- read_csv("curling.csv")
+
+
+#Potential data cleaning / Priors from Beijing
+Beijing <- curlin %>% filter(CompetitionName == "Beijing 2022 Olympic Winter Games")
+mean(Beijing$Points) #3.22 average score of intentions
+Powerplay <- Beijing %>% filter(PowerPlay == T)
+length(Beijing$PowerPlay) / length(Powerplay$PowerPlay)  #0.125 Powerplays per year (Dumb code and dumber user pp per year doesnt even matter)
+
+curlin_excised <- curlin %>% filter(!(CompetitionName %in% "Beijing 2022 Olympic Winter Games"))
+
+```
+
+
+
+Partial Pooling for Q2.
+
+Do these results (Odds of winning a curling match) vary by whether or not the play (power or otherwise) “failed in its intended result”?
+Beta hyperparameters need to be done properly
+$$
+Y_{ij} | \pi_{ij},\beta_0, \beta_1, \beta_2 &\sim Bernoulli(\pi_{ij}) \\
+\log(\frac{\pi_{ij}}{1-\pi_{ij}}) &= \beta_0 + \beta_1 \cdot PowerPlay + \beta_2 \cdot Success \\
+\pi_{ij} &= invlogit(\beta_0 + \beta_1 \cdot PowerPlay_{ij} + \beta_2 \cdot Success_{ij})
+\\
+B_0 &\sim N(m_0, s_0^2) \\
+B_1 &\sim N(m_1, s_1^2) \\
+B_2 &\sim N(m_2, s_2^2) \\
+
+m_0 & \sim \text{N}(u_0, v_0^2) \\
+m_1 & \sim \text{N}(u_1, v_1^2) \\
+m_2 & \sim \text{N}(u_2, v_2^2) \\
+
+1 / s_0^2 & \sim \text{Gamma}(\alpha_0, \beta_0) \\
+1 / s_1^2 & \sim \text{Gamma}(\alpha_1, \beta_1) \\
+1 / s_2^2 & \sim \text{Gamma}(\alpha_2, \beta_2) \\
+
+
+
+
+$$
+
+
+```{r}
+# 
+#   int<lower=1> N; // total number of observations - sets
+#   int<lower=1> k; // number of matches
+#   vector[N] x; // this is powerplay
+#   vector[N] x2; // this is success
+#   int<lower=0, upper=1> y[N];
+#   int<lower=0> i[N]; // these are our indices for each Match
+#                       // We need right here our two indicator variables
+#   
+#   // hyperparameters for regression coefficients (Betas) and likelihood variance
+#   real u0;
+#   real u1;
+#   real u2;
+#   real<lower=0> v0;
+#   real<lower=0> v1;
+#   real<lower=0> v2;
+# 
+#   
+#   // hyperparameters for random effects (Gamma funcs)
+#   real<lower=0> alpha0;
+#   real<lower=0> alpha1;
+#   real<lower=0> alpha2;
+# 
+#   real<lower=0> eta0;
+#   real<lower=0> eta1;
+#   real<lower=0> eta2;
+
+curlin <- curlin %>% mutate(Points = ifelse((Points > 2), 1, 0))
+
+PPQ2Data <- list(x = curlin$PowerPlay,
+                 x2 = curlin$Points,
+                 y = curlin$USWin,
+                 N = length(curlin$CompetitionName), #sets
+                 k = length(unique(curlin$MatchID)),# Number of matches
+                 i = curlin$MatchID, # for indexings sake
+                 u0 = 1,
+                 u1 = 1,
+                 u2 = 1,
+                 
+                 v0 = 1,
+                 v1 = 1,
+                 v2 = 1,
+                 
+                 alpha0 = 1,
+                 alpha1 = 1,
+                 alpha2 = 1,
+                 
+                 eta0 = 1,
+                 eta1 = 1,
+                 eta2 = 1
+                 
+)
+
+fit <- stan(file = "PPQ2.stan", 
+            data = PPQ2Data, 
+            chains = 4, 
+            warmup = 1000,
+            iter = 2000)
+```
+```{r}
+print(fit)
+traceplot(fit)
+
+intercepts <- summary(fit, pars = c('beta0'))$summary[,1]
+slopes <- summary(fit, pars = c('beta1'))$summary[,1]
+slopes2 <- summary(fit, pars = c('beta2'))$summary[,1]
+
+slopes[1] + intercepts[1] + slopes2[1]# why si this bigger than 1
+
+mean(intercepts)
+mean(slopes)
+
+  curlin %>%   ggplot(aes(PowerPlay, USWin)) +
+  geom_point(col = "white") + 
+  theme_classic() +
+  geom_abline(slope = slopes, intercept = intercepts, col = "grey")
+```
+
+
