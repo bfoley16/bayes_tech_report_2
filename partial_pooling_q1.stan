@@ -6,7 +6,7 @@ data {
   int<lower=1> N; // total number of observations
   int<lower=1> k; // number of matches
   vector[N] x;
-  vector[N] y;
+  int<lower=0, upper=1> y[N]; 
   int<lower=0> i[N]; // these are our indices for each match
   
   // hyperparameters for regression coefficients
@@ -47,7 +47,7 @@ transformed parameters {
   }
   
   // convert log odds to probability
-  prob = (exp(log_odds)) / (1 + exp(log_odds));
+  prob = exp(log_odds) ./ (1 + exp(log_odds));
   
   // getting 1/s0^2 and 1/s1^2 for the Gamma hyperpriors
   real<lower=0> s02_inv;
@@ -65,6 +65,5 @@ model {
   target += normal_lpdf(m1 | u1, v1);
   target += gamma_lpdf(s02_inv | alpha0, eta0);
   target += gamma_lpdf(s12_inv | alpha1, eta1);
-  target += gamma_lpdf(tau | alpha, eta);
 }
 
