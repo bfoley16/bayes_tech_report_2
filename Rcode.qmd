@@ -75,29 +75,56 @@ final_curling <- curlin %>%
 ```
 
 
+```{r}
+final_curling %>% 
+  summarize_at(vars(starts_with("PowerPlay_")), mean)
+```
+
+
 Partial Pooling for Q1:
 
 ```{r}
-ppq_1_data <- list(N = length(curlin$CompetitionName), #sets
-                   k = length(unique(curlin$MatchID)), # Number of matches
-                   x = curlin$PowerPlay,
-                   y = curlin$USWin,
-                   i = curlin$MatchID, # for indexings sake
+q1_prior <- glm(USWin ~ PowerPlayPresent, data = final_curling, family = "binomial")
+
+q1_prior %>% 
+  summary()
+
+ppq_1_data <- list(N = length(final_curling$CompetitionName), # number of matches
+                   k = length(unique(final_curling$CompetitionName)), # Number of competitions
+                   PowerPlay_5 = final_curling$PowerPlay_5,
+                   PowerPlay_6 = final_curling$PowerPlay_6,
+                   PowerPlay_7 = final_curling$PowerPlay_7,
+                   PowerPlay_8 = final_curling$PowerPlay_8,
+                   y = final_curling$USWin,
+                   i = final_curling$CompetitionIndex, # for indexings sake
                    u0 = 1,
                    u1 = 1,
+                   u2 = 1,
+                   u3 = 1,
+                   u4 = 1,
                    v0 = 1,
                    v1 = 1,
+                   v2 = 1,
+                   v3 = 1,
+                   v4 = 1,
                    alpha0 = 1,
                    alpha1 = 1,
+                   alpha2 = 1,
+                   alpha3 = 1,
+                   alpha4 = 1,
                    eta0 = 1,
-                   eta1 = 1
+                   eta1 = 1,
+                   eta2 = 1,
+                   eta3 = 1,
+                   eta4 = 1
 )
 
 fit <- stan(file = "partial_pooling_q1.stan", 
             data = ppq_1_data, 
             chains = 4, 
             warmup = 1000,
-            iter = 2000)
+            iter = 2000,
+            control = list(adapt_delta = 0.999))
 ```
 
 
