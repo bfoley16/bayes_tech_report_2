@@ -6,17 +6,23 @@ format: html
 ```{r}
 library(ggplot2)
 library(tidyverse)
+library(rstan)
 
 curlin <- read_csv("curling.csv")
 
 
 #Potential data cleaning / Priors from Beijing
-Beijing <- curlin %>% filter(CompetitionName == "Beijing 2022 Olympic Winter Games")
+Beijing <- curlin %>% 
+  filter(CompetitionName == "Beijing 2022 Olympic Winter Games")
 mean(Beijing$Points) #3.22 average score of intentions
 Powerplay <- Beijing %>% filter(PowerPlay == T)
-length(Beijing$PowerPlay) / length(Powerplay$PowerPlay)  #0.125 Powerplays per year (Dumb code and dumber user pp per year doesnt even matter)
+length(Beijing$PowerPlay) / 
+  length(Powerplay$PowerPlay)  
+# 0.125 Powerplays per year 
+# (Dumb code and dumber user pp per year doesnt even matter)
 
-curlin_excised <- curlin %>% filter(!(CompetitionName %in% "Beijing 2022 Olympic Winter Games"))
+curlin_excised <- curlin %>% 
+  filter(!(CompetitionName %in% "Beijing 2022 Olympic Winter Games"))
 
 ```
 
@@ -27,7 +33,8 @@ curlin %>%
   group_by(CompetitionName) %>% 
   summarize(num_matches = max(MatchID))
 
-# create a new variable for successful shot (deemed a Points score of higher than 2)
+# create a new variable for successful shot 
+# (deemed a Points score of higher than 2)
 curlin <- curlin %>% mutate(Success = ifelse((Points > 2), 1, 0))
 
 successful_powerplays <- curlin %>% 
@@ -39,7 +46,8 @@ successful_powerplays <- curlin %>%
   select(CompetitionName, MatchID, PowerPlaySuccessful)
 
 n_successful_non_powerplays <- curlin %>% 
-  # filter to competitions other than Beijing Olympics, consider only non powerplays
+  # filter to competitions other than Beijing Olympics, 
+  # consider only non powerplays
   filter(!str_detect(CompetitionName, "Beijing"),
          !PowerPlay) %>% 
   select(!c(PowerPlay, Points)) %>% 
@@ -51,7 +59,8 @@ final_curling <- curlin %>%
   # filter to competitions other than Beijing Olympics
   filter(!str_detect(CompetitionName, "Beijing")) %>%
   select(!Success) %>% 
-  # pivot so there's one row per match. information about powerplay and points go to a column per end
+  # pivot so there's one row per match. 
+  # information about powerplay and points go to a column per end
   pivot_wider(
     names_from = "EndID",
     values_from = c("PowerPlay", "Points"),
@@ -59,14 +68,23 @@ final_curling <- curlin %>%
   ) %>% 
   # determine if there's at least one powerplay in a match
   mutate(
-    PowerPlayPresent = if_else((PowerPlay_1 | PowerPlay_2 | PowerPlay_3 | PowerPlay_4 | PowerPlay_5 | PowerPlay_6 | PowerPlay_7 | PowerPlay_8 | PowerPlay_9), TRUE, FALSE)
+    PowerPlayPresent = 
+      if_else((PowerPlay_1 | PowerPlay_2 | PowerPlay_3 | PowerPlay_4 | 
+                 PowerPlay_5 | PowerPlay_6 | PowerPlay_7 | PowerPlay_8 | 
+                 PowerPlay_9), TRUE, FALSE)
   ) %>% 
   # add on information regarding successful powerplays
-  left_join(successful_powerplays, by = join_by("CompetitionName" == "CompetitionName", "MatchID" == "MatchID")) %>% 
+  left_join(successful_powerplays, 
+            by = join_by("CompetitionName" == "CompetitionName", 
+                         "MatchID" == "MatchID")) %>% 
   # add on information regarding number of successful non powerplays
-  left_join(n_successful_non_powerplays, by = join_by("CompetitionName" == "CompetitionName", "MatchID" == "MatchID")) %>% 
-  # turn NA values from lack of powerplay in match to FALSE, create index for competition name
-  mutate(PowerPlaySuccessful = if_else(is.na(PowerPlaySuccessful), FALSE, PowerPlaySuccessful),
+  left_join(n_successful_non_powerplays, 
+            by = join_by("CompetitionName" == "CompetitionName", 
+                         "MatchID" == "MatchID")) %>% 
+  # turn NA values from lack of powerplay in match to FALSE, 
+  # create index for competition name
+  mutate(PowerPlaySuccessful = 
+           if_else(is.na(PowerPlaySuccessful), FALSE, PowerPlaySuccessful),
          CompetitionIndex = case_when(
            CompetitionName == "World Mixed Doubles Curling Championship 2023" ~ 1,
            CompetitionName == "World Mixed Doubles Curling Championship 2024" ~ 2,
@@ -80,11 +98,74 @@ final_curling %>%
   summarize_at(vars(starts_with("PowerPlay_")), mean)
 ```
 
+```{r}
+successful_powerplays_beijing <- curlin %>% 
+  # filter to competitions other than Beijing Olympics, consider only powerplays
+  filter(str_detect(CompetitionName, "Beijing"),
+         PowerPlay) %>% 
+  # create a PowerPlaySuccessful variable
+  mutate(PowerPlaySuccessful = if_else((Success == 1), TRUE, FALSE)) %>% 
+  select(CompetitionName, MatchID, PowerPlaySuccessful)
 
-Partial Pooling for Q1:
+n_successful_non_powerplays_beijing <- curlin %>% 
+  # filter to competitions other than Beijing Olympics, 
+  # consider only non powerplays
+  filter(str_detect(CompetitionName, "Beijing"),
+         !PowerPlay) %>% 
+  select(!c(PowerPlay, Points)) %>% 
+  group_by(CompetitionName, MatchID) %>% 
+  # count how many successful non powerplays there were per match
+  summarize(SuccessfulNonPowerPlays = sum(Success))
+  
+final_curling_beijing <- curlin %>% 
+  # filter to competitions other than Beijing Olympics
+  filter(str_detect(CompetitionName, "Beijing")) %>%
+  select(!Success) %>% 
+  # pivot so there's one row per match. 
+  # information about powerplay and points go to a column per end
+  pivot_wider(
+    names_from = "EndID",
+    values_from = c("PowerPlay", "Points"),
+    values_fill = list("PowerPlay" = FALSE, "Points" = 0)
+  ) %>% 
+  # determine if there's at least one powerplay in a match
+  mutate(
+    PowerPlayPresent = if_else((PowerPlay_1 | PowerPlay_2 | PowerPlay_3 | 
+                                  PowerPlay_4 | PowerPlay_5 | PowerPlay_6 | 
+                                  PowerPlay_7 | PowerPlay_8 | PowerPlay_9), 
+                               TRUE, FALSE)
+  ) %>% 
+  # add on information regarding successful powerplays
+  left_join(successful_powerplays_beijing, 
+            by = join_by("CompetitionName" == "CompetitionName", 
+                         "MatchID" == "MatchID")) %>% 
+  # add on information regarding number of successful non powerplays
+  left_join(n_successful_non_powerplays_beijing, 
+            by = join_by("CompetitionName" == "CompetitionName", 
+                         "MatchID" == "MatchID")) %>% 
+  # turn NA values from lack of powerplay in match to FALSE, create index for competition name
+  mutate(PowerPlaySuccessful = 
+           if_else(is.na(PowerPlaySuccessful), FALSE, PowerPlaySuccessful),
+         CompetitionIndex = case_when(
+           CompetitionName == "World Mixed Doubles Curling Championship 2023" ~ 1,
+           CompetitionName == "World Mixed Doubles Curling Championship 2024" ~ 2,
+           CompetitionName == "World Mixed Doubles Curling Championship 2025" ~ 3
+         ))
+```
 
 ```{r}
-q1_prior <- glm(USWin ~ PowerPlayPresent, data = final_curling, family = "binomial")
+final_curling_beijing %>% 
+  group_by(PowerPlayPresent) %>% 
+  summarize(win_percentage = mean(USWin))
+```
+
+
+
+Partial Pooling for Q1 (DO NOT USE):
+
+```{r}
+q1_prior <- glm(USWin ~ PowerPlay_5 + PowerPlay_6 + PowerPlay_7 + PowerPlay_8, 
+                data = final_curling_beijing, family = "binomial")
 
 q1_prior %>% 
   summary()
@@ -97,11 +178,11 @@ ppq_1_data <- list(N = length(final_curling$CompetitionName), # number of matche
                    PowerPlay_8 = final_curling$PowerPlay_8,
                    y = final_curling$USWin,
                    i = final_curling$CompetitionIndex, # for indexings sake
-                   u0 = 1,
-                   u1 = 1,
-                   u2 = 1,
-                   u3 = 1,
-                   u4 = 1,
+                   u0 = 0,
+                   u1 = 0,
+                   u2 = 0,
+                   u3 = 0,
+                   u4 = 0,
                    v0 = 1,
                    v1 = 1,
                    v2 = 1,
@@ -119,12 +200,75 @@ ppq_1_data <- list(N = length(final_curling$CompetitionName), # number of matche
                    eta4 = 1
 )
 
+
+set.seed(454)
+
 fit <- stan(file = "partial_pooling_q1.stan", 
             data = ppq_1_data, 
             chains = 4, 
             warmup = 1000,
             iter = 2000,
             control = list(adapt_delta = 0.999))
+```
+
+# Partial Pooling #1 Version 2 (THIS WAS USED)
+
+```{r}
+ppq_1_data_v2 <- list(N = length(final_curling$CompetitionName), # number of matches
+                   k = length(unique(final_curling$CompetitionName)), # Number of competitions
+                   PowerPlayPresent = final_curling$PowerPlayPresent,
+                   y = final_curling$USWin,
+                   i = final_curling$CompetitionIndex, # for indexings sake
+                   u0 = -0.30,
+                   u1 = 0,
+                   v0 = 1,
+                   v1 = 1,
+                   alpha0 = 1,
+                   alpha1 = 1,
+                   eta0 = 1,
+                   eta1 = 1
+)
+
+
+set.seed(355)
+
+fit_q1 <- stan(file = "partial_pooling_q1_v2.stan", 
+            data = ppq_1_data_v2, 
+            chains = 4, 
+            warmup = 1000,
+            iter = 8000,
+            control = list(adapt_delta = 0.999,
+                           max_treedepth = 16))
+```
+
+```{r}
+bulk_ess_beta0 <- vector(mode = "double", length = 3)
+bulk_ess_beta1 <- vector(mode = "double", length = 3)
+
+for (i in 1:3) {
+  bulk_ess_beta0[i] <- ess_bulk(extract(fit_q1, 
+                                        pars = "beta0", permuted = FALSE)[,,i])
+  bulk_ess_beta1[i] <- ess_bulk(extract(fit_q1, 
+                                        pars = "beta1", permuted = FALSE)[,,i])
+}
+
+rhat_beta0 <- vector(mode = "double", length = 3)
+rhat_beta1 <- vector(mode = "double", length = 3)
+
+for (i in 1:3) {
+  rhat_beta0[i] <- Rhat(extract(fit_q1, pars = "beta0", 
+                                permuted = FALSE)[,,i])
+  rhat_beta1[i] <- Rhat(extract(fit_q1, pars = "beta1", 
+                                permuted = FALSE)[,,i])
+}
+
+
+
+traceplot(fit_q1, pars = "beta0")
+traceplot(fit_q1, pars = "beta1")
+
+print(fit_q1, pars = c("beta0", "beta1"))
+print(fit_q1, pars = c("exp_beta0", "exp_beta1"))
 ```
 
 

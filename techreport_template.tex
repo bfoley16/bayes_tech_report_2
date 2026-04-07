@@ -1,0 +1,89 @@
+\documentclass[11pt]{article}
+\usepackage[left=2cm, right=2cm, top=2cm, bottom = 2cm]{geometry}
+
+\usepackage{amsmath, enumitem, tcolorbox, hyperref}
+
+% Fill in your name below!!
+\title{TR Title}
+\author{Your Names Here}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+
+\begin{abstract}
+    Include your abstract here. Abstracts should typically be between 100-200 words. One option for structuring an abstract is to begin with a sentence on background, then proceed to the objective of the report, your unique contributions to the problem (aka what you did), and briefly summarize results / findings.
+\end{abstract}
+
+\section*{Background and Objective}
+
+Throughout the entire report, write in \textit{complete sentences}, and make sure that each paragraph has a \textit{topic sentence}. \textbf{BE CONCISE}. A longer report does not directly correspond to a \textit{better} report. Don't ramble. Say what you need to say (clearly), and move on. The same goes for the following sections.
+
+\noindent Things that should be included in this section:
+
+\begin{itemize}
+    \item What is the motivating context?
+    \item What question(s) are you trying to answer?
+    \item If there are \textit{relevant} summary measures or visualizations, include them here (as tables or figures), and make sure they are labeled \textit{and} have captions.
+\end{itemize}
+
+
+
+\section*{Methodology}
+
+\begin{itemize}
+    \item What sort of model did you use to address your questions?
+    \item What data decisions (if any) did you make that might impact your results, or impacted your modeling decisions?
+    \item With \textit{rare} exceptions, this section should not contain visualizations or tables.
+    \item If you used code / software for your analysis, what did you use? What packages / versions? Reference a code file that you submit along with your report so that someone could replicate your analysis.
+    \item If there are details that would be relevant to replicating your analysis but may \textit{detract} from the main ``point" of your report, considering including them in an appendix and referencing sections of it here.
+    \item Justify your modeling choices, either using context and/or statistical theory. For example, if your outcome is binary, a binomial likelihood would be theoretically justified. If you're interested in \textit{change} in a quantitative variable over time, you could justify (1) calculating a difference, and modeling that difference with a continuous random variable, OR (2) modeling the latter observation as a function of the first, so that your results are interpreted for observations \textit{conditional on} a given initial value.
+\end{itemize}
+
+\noindent Include any model statements in \textit{formal notation} as equations. If you plan on referencing them in your report, label them (using \texttt{align} rather than \texttt{align*}). Here's an example of how you might write up a model statement appropriately. \\
+
+%% Example start
+\noindent Let $y_i$ denote the number of deaths out of $n_i$ total individual in county $i = 1, \dots, 400$. We model the probability of death in each county $\theta_i$ as a linear function of observed average county income $x_i$
+
+\begin{align}
+\begin{split} % split makes sure that the equation is only labeled ONCE. if you want each line of the equation to have a different number, remove the split environment and use only align!
+    y_i \mid \theta_i, n_i & \sim \text{Binomial}(n_{i}, \theta_i) \\
+    \theta_i & = \beta_0 + \beta_1 x_i \\
+    \beta_0 & \propto 1 \\
+    \beta_1 & \sim N(0, 1)
+\end{split}
+\end{align}
+where $\beta_0$ is given an improper priors, and $\beta_1$ is given a standard normal prior.
+%% Example end
+
+\noindent General rules of thumb:
+\begin{itemize}
+    \item Vectors should be bolded. Use \texttt{textbf} or \texttt{boldsymbol} if you're bolding a letter or symbol, respectively.
+    \item Observations should be indexed according to how they vary. In the above example, we have 400 observations (1 per county), so we chose the index $i$ to represent county. If we additionally had observations across \textit{time} and a covariate that only varied by time, for example, we would need an additional index for time $t$.
+\end{itemize}
+
+\section*{Analysis and Results}
+
+\begin{itemize}
+    \item \textit{Report} your results. Make a note of summary measures, interpret credible intervals, convergence diagnostics, and posterior predictive checks, as relevant for the report.
+    \item Include figures and tables of relevant summaries. This might include trace plots, histograms / boxplots / density plots of samples from posterior distributions, etc.
+    \item Do not discuss the \textit{impact} of your results! That comes in the discussion section.
+\end{itemize}
+
+\section*{Discussion}
+
+\begin{itemize}
+    \item Answer the question you were interested in all along, based on your results.
+    \item Discuss any limitations of your analysis.
+    \item What would/could be included in a \textit{future} analysis or futher study?
+\end{itemize}
+
+%% References
+
+%% Appendix
+
+
+
+\end{document}
