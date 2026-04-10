@@ -107,12 +107,16 @@ final_curling_canada <- canada_curling %>%
                  PowerPlay_5 | PowerPlay_6 | PowerPlay_7 | PowerPlay_8 | 
                  PowerPlay_9), TRUE, FALSE)
   ) %>% 
+  # determine if there's a PowerPlay in ends 1 through 5
+  mutate(PowerPlay_1through5 = 
+           if_else((PowerPlay_1 | PowerPlay_2 | PowerPlay_3 | PowerPlay_4 | 
+                 PowerPlay_5), TRUE, FALSE)) %>% 
   # add on information regarding successful powerplays
-  left_join(successful_powerplays, 
+  left_join(successful_powerplays_canada, 
             by = join_by("CompetitionName" == "CompetitionName", 
                          "MatchID" == "MatchID")) %>% 
   # add on information regarding number of successful non powerplays
-  left_join(n_successful_non_powerplays, 
+  left_join(n_successful_non_powerplays_canada, 
             by = join_by("CompetitionName" == "CompetitionName", 
                          "MatchID" == "MatchID")) %>% 
   # turn NA values from lack of powerplay in match to FALSE, 
@@ -120,11 +124,38 @@ final_curling_canada <- canada_curling %>%
   mutate(PowerPlaySuccessful = 
            if_else(is.na(PowerPlaySuccessful), FALSE, PowerPlaySuccessful),
          CompetitionIndex = case_when(
-           CompetitionName == "World Mixed Doubles Curling Championship 2023" ~ 1,
-           CompetitionName == "World Mixed Doubles Curling Championship 2024" ~ 2,
-           CompetitionName == "World Mixed Doubles Curling Championship 2025" ~ 3
+           CompetitionName == "Beijing 2022 Olympic Winter Games" ~ 1,
+           CompetitionName == "World Mixed Doubles Curling Championship 2023" ~ 2,
+           CompetitionName == "World Mixed Doubles Curling Championship 2024" ~ 3,
+           CompetitionName == "World Mixed Doubles Curling Championship 2025" ~ 4
          ))
 ```
 
+```{r}
+final_curling_canada %>% 
+  ungroup() %>% 
+  summarize_at(vars(starts_with("PowerPlay_")), mean)
+```
+
+
+# Calculate Priors for Question 1
+
+```{r}
+# calculate prob of winning when powerplay on end 5
+final_curling_canada %>% 
+  filter(PowerPlay_1through5)
+
+# calculate prob of winning when powerplay on end 6
+final_curling_canada %>% 
+  filter(PowerPlay_6)
+
+# calculate prob of winning when powerplay on end 7
+final_curling_canada %>% 
+  filter(PowerPlay_7)
+
+# calculate prob of winning when powerplay on end 8
+final_curling_canada %>% 
+  filter(PowerPlay_8)
+```
 
 

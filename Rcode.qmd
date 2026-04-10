@@ -71,6 +71,10 @@ final_curling <- curlin %>%
                  PowerPlay_5 | PowerPlay_6 | PowerPlay_7 | PowerPlay_8 | 
                  PowerPlay_9), TRUE, FALSE)
   ) %>% 
+  # determine if there's a PowerPlay in ends 1 through 5
+  mutate(PowerPlay_1through5 = 
+           if_else((PowerPlay_1 | PowerPlay_2 | PowerPlay_3 | PowerPlay_4 | 
+                 PowerPlay_5), TRUE, FALSE)) %>% 
   # add on information regarding successful powerplays
   left_join(successful_powerplays, 
             by = join_by("CompetitionName" == "CompetitionName", 
@@ -84,9 +88,10 @@ final_curling <- curlin %>%
   mutate(PowerPlaySuccessful = 
            if_else(is.na(PowerPlaySuccessful), FALSE, PowerPlaySuccessful),
          CompetitionIndex = case_when(
-           CompetitionName == "World Mixed Doubles Curling Championship 2023" ~ 1,
-           CompetitionName == "World Mixed Doubles Curling Championship 2024" ~ 2,
-           CompetitionName == "World Mixed Doubles Curling Championship 2025" ~ 3
+           CompetitionName == "Beijing 2022 Olympic Winter Games" ~ 1,
+           CompetitionName == "World Mixed Doubles Curling Championship 2023" ~ 2,
+           CompetitionName == "World Mixed Doubles Curling Championship 2024" ~ 3,
+           CompetitionName == "World Mixed Doubles Curling Championship 2025" ~ 4
          ))
 ```
 
