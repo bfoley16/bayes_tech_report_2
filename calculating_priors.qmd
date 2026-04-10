@@ -92,7 +92,8 @@ n_successful_non_powerplays_canada <- canada_curling %>%
 final_curling_canada <- canada_curling %>% 
   select(!Success) %>% 
   group_by(CompetitionName, MatchID) %>% 
-  mutate(number_of_ends = max(EndID)) %>% 
+  mutate(number_of_ends = max(EndID),
+         num_ends_center_6 = number_of_ends - 6) %>% 
   # pivot so there's one row per match. 
   # information about powerplay and points go to a column per end
   pivot_wider(
@@ -107,10 +108,6 @@ final_curling_canada <- canada_curling %>%
                  PowerPlay_5 | PowerPlay_6 | PowerPlay_7 | PowerPlay_8 | 
                  PowerPlay_9), TRUE, FALSE)
   ) %>% 
-  # determine if there's a PowerPlay in ends 1 through 5
-  mutate(PowerPlay_1through5 = 
-           if_else((PowerPlay_1 | PowerPlay_2 | PowerPlay_3 | PowerPlay_4 | 
-                 PowerPlay_5), TRUE, FALSE)) %>% 
   # add on information regarding successful powerplays
   left_join(successful_powerplays_canada, 
             by = join_by("CompetitionName" == "CompetitionName", 
@@ -141,21 +138,62 @@ final_curling_canada %>%
 # Calculate Priors for Question 1
 
 ```{r}
-# calculate prob of winning when powerplay on end 5
+# calculation for beta_0
 final_curling_canada %>% 
-  filter(PowerPlay_1through5)
+  filter(num_ends_center_6 == 0,
+         !PowerPlayPresent)
 
-# calculate prob of winning when powerplay on end 6
+# calculation for beta_1 
 final_curling_canada %>% 
-  filter(PowerPlay_6)
+  filter(PowerPlay_5)
 
-# calculate prob of winning when powerplay on end 7
 final_curling_canada %>% 
-  filter(PowerPlay_7)
+  ungroup() %>% 
+  filter(!PowerPlay_5) %>% 
+  summarize(prop_victory = mean(CanadaWin))
 
-# calculate prob of winning when powerplay on end 8
+# calculation for beta_2 
 final_curling_canada %>% 
-  filter(PowerPlay_8)
+  ungroup() %>% 
+  filter(PowerPlay_6) %>% 
+  summarize(prop_victory = mean(CanadaWin))
+
+final_curling_canada %>% 
+  ungroup() %>% 
+  filter(!PowerPlay_6) %>% 
+  summarize(prop_victory = mean(CanadaWin))
+
+# calculation for beta_3 
+final_curling_canada %>% 
+  ungroup() %>% 
+  filter(PowerPlay_7) %>% 
+  summarize(prop_victory = mean(CanadaWin))
+
+final_curling_canada %>% 
+  ungroup() %>% 
+  filter(!PowerPlay_7) %>% 
+  summarize(prop_victory = mean(CanadaWin))
+
+# calculation for beta_4
+final_curling_canada %>% 
+  ungroup() %>% 
+  filter(PowerPlay_8) %>% 
+  summarize(prop_victory = mean(CanadaWin))
+
+final_curling_canada %>% 
+  ungroup() %>% 
+  filter(!PowerPlay_8) %>% 
+  summarize(prop_victory = mean(CanadaWin))
+
+# calculation for beta_5
+final_curling_canada %>% 
+  ggplot(aes(x = number_of_ends, fill = factor(CanadaWin))) +
+  geom_bar(position = "fill")
+
+ final_curling_canada %>% 
+  ungroup() %>% 
+  group_by(number_of_ends) %>% 
+  summarize(prop_victory = mean(CanadaWin))
 ```
 
 

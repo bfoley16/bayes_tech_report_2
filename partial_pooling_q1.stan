@@ -9,53 +9,31 @@ data {
   int<lower=0, upper=1> PowerPlay_6[N];
   int<lower=0, upper=1> PowerPlay_7[N];
   int<lower=0, upper=1> PowerPlay_8[N];
+  int<lower=0, upper=9> NumberEnds[N];
   int<lower=0, upper=1> y[N]; 
   int<lower=0> i[N]; // these are our indices for each match
   
   // hyperparameters for regression coefficients
   real u0;
-  real u1;
-  real u2;
-  real u3;
-  real u4;
   real<lower=0> v0;
-  real<lower=0> v1;
-  real<lower=0> v2;
-  real<lower=0> v3;
-  real<lower=0> v4;
   
-  // hyperparameters for random effects
+  // hyperparameters for random intercept
   real<lower=0> alpha0;
-  real<lower=0> alpha1;
-  real<lower=0> alpha2;
-  real<lower=0> alpha3;
-  real<lower=0> alpha4;
   real<lower=0> eta0;
-  real<lower=0> eta1;
-  real<lower=0> eta2;
-  real<lower=0> eta3;
-  real<lower=0> eta4;
 }
 
 parameters {
   // prior layer
   vector[k] beta0;
-  vector[k] beta1;
-  vector[k] beta2;
-  vector[k] beta3;
-  vector[k] beta4;
+  real beta1;
+  real beta2;
+  real beta3;
+  real beta4;
+  real beta5;
   
   // hyperprior layer
   real m0;
-  real m1;
-  real m2;
-  real m3;
-  real m4;
   real<lower=0> s0;
-  real<lower=0> s1;
-  real<lower=0> s2;
-  real<lower=0> s3;
-  real<lower=0> s4;
 }
 
 transformed parameters {
@@ -67,7 +45,7 @@ transformed parameters {
   
   // fill in log_odds for each match
   for (l in 1:N) {
-    log_odds[l] = beta0[i[l]] + beta1[i[l]] * PowerPlay_5[l] + beta2[i[l]] * PowerPlay_6[l] + beta3[i[l]] * PowerPlay_7[l] + beta4[i[l]] * PowerPlay_8[l]; // betas depend on the group. i[l] tells you what group you're in
+    log_odds[l] = beta0[i[l]] + beta1 * PowerPlay_5[l] + beta2 * PowerPlay_6[l] + beta3 * PowerPlay_7[l] + beta4 * PowerPlay_8[l] + beta5 * NumberEnds[l]; // betas depend on the group. i[l] tells you what group you're in
   }
   
   // convert log odds to probability
@@ -75,34 +53,35 @@ transformed parameters {
   
   // getting 1/s0^2 and 1/s1^2 for the Gamma hyperpriors
   real<lower=0> s02_inv;
-  real<lower=0> s12_inv;
-  real<lower=0> s22_inv;
-  real<lower=0> s32_inv;
-  real<lower=0> s42_inv;
   
   s02_inv = 1/(s0^2);
-  s12_inv = 1/(s1^2);
-  s22_inv = 1/(s2^2);
-  s32_inv = 1/(s3^2);
-  s42_inv = 1/(s4^2);
 }
 
 model {
   target += bernoulli_lpmf(y | prob);
   target += normal_lpdf(beta0 | m0, s0);
-  target += normal_lpdf(beta1 | m1, s1);
-  target += normal_lpdf(beta2 | m2, s2);
-  target += normal_lpdf(beta3 | m3, s3);
-  target += normal_lpdf(beta4 | m4, s4);
+  target += normal_lpdf(beta1 | -3.037, 0.1);
+  target += normal_lpdf(beta2 | -1.35, 0.02);
+  target += normal_lpdf(beta3 | -0.906, 0.012);
+  target += normal_lpdf(beta4 | 0.69, 0.025);
+  target += normal_lpdf(beta5 | -2, 0.5);
   target += normal_lpdf(m0 | u0, v0);
-  target += normal_lpdf(m1 | u1, v1);
-  target += normal_lpdf(m2 | u2, v2);
-  target += normal_lpdf(m3 | u3, v3);
-  target += normal_lpdf(m4 | u4, v4);
   target += gamma_lpdf(s02_inv | alpha0, eta0);
-  target += gamma_lpdf(s12_inv | alpha1, eta1);
-  target += gamma_lpdf(s22_inv | alpha2, eta2);
-  target += gamma_lpdf(s32_inv | alpha3, eta3);
-  target += gamma_lpdf(s42_inv | alpha4, eta4);
 }
+
+generated quantities {
+  vector[k] exp_beta0;
+  real exp_beta1;
+  real exp_beta2;
+  real exp_beta3;
+  real exp_beta4;
+  real exp_beta5;
+  exp_beta0 = exp(beta0);
+  exp_beta1 = exp(beta1);
+  exp_beta2 = exp(beta2);
+  exp_beta3 = exp(beta3);
+  exp_beta4 = exp(beta4);
+  exp_beta5 = exp(beta5);
+}
+
 

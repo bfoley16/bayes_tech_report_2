@@ -56,7 +56,8 @@ n_successful_non_powerplays <- curlin %>%
 final_curling <- curlin %>% 
   select(!Success) %>% 
   group_by(CompetitionName, MatchID) %>% 
-  mutate(number_of_ends = max(EndID)) %>% 
+  mutate(number_of_ends = max(EndID),
+         num_ends_center_6 = number_of_ends - 6) %>% 
   # pivot so there's one row per match. 
   # information about powerplay and points go to a column per end
   pivot_wider(
@@ -101,70 +102,7 @@ final_curling %>%
   summarize_at(vars(starts_with("PowerPlay_")), mean)
 ```
 
-```{r}
-successful_powerplays_beijing <- curlin %>% 
-  # filter to competitions other than Beijing Olympics, consider only powerplays
-  filter(str_detect(CompetitionName, "Beijing"),
-         PowerPlay) %>% 
-  # create a PowerPlaySuccessful variable
-  mutate(PowerPlaySuccessful = if_else((Success == 1), TRUE, FALSE)) %>% 
-  select(CompetitionName, MatchID, PowerPlaySuccessful)
-
-n_successful_non_powerplays_beijing <- curlin %>% 
-  # filter to competitions other than Beijing Olympics, 
-  # consider only non powerplays
-  filter(str_detect(CompetitionName, "Beijing"),
-         !PowerPlay) %>% 
-  select(!c(PowerPlay, Points)) %>% 
-  group_by(CompetitionName, MatchID) %>% 
-  # count how many successful non powerplays there were per match
-  summarize(SuccessfulNonPowerPlays = sum(Success))
-  
-final_curling_beijing <- curlin %>% 
-  # filter to competitions other than Beijing Olympics
-  filter(str_detect(CompetitionName, "Beijing")) %>%
-  select(!Success) %>% 
-  # pivot so there's one row per match. 
-  # information about powerplay and points go to a column per end
-  pivot_wider(
-    names_from = "EndID",
-    values_from = c("PowerPlay", "Points"),
-    values_fill = list("PowerPlay" = FALSE, "Points" = 0)
-  ) %>% 
-  # determine if there's at least one powerplay in a match
-  mutate(
-    PowerPlayPresent = if_else((PowerPlay_1 | PowerPlay_2 | PowerPlay_3 | 
-                                  PowerPlay_4 | PowerPlay_5 | PowerPlay_6 | 
-                                  PowerPlay_7 | PowerPlay_8 | PowerPlay_9), 
-                               TRUE, FALSE)
-  ) %>% 
-  # add on information regarding successful powerplays
-  left_join(successful_powerplays_beijing, 
-            by = join_by("CompetitionName" == "CompetitionName", 
-                         "MatchID" == "MatchID")) %>% 
-  # add on information regarding number of successful non powerplays
-  left_join(n_successful_non_powerplays_beijing, 
-            by = join_by("CompetitionName" == "CompetitionName", 
-                         "MatchID" == "MatchID")) %>% 
-  # turn NA values from lack of powerplay in match to FALSE, create index for competition name
-  mutate(PowerPlaySuccessful = 
-           if_else(is.na(PowerPlaySuccessful), FALSE, PowerPlaySuccessful),
-         CompetitionIndex = case_when(
-           CompetitionName == "World Mixed Doubles Curling Championship 2023" ~ 1,
-           CompetitionName == "World Mixed Doubles Curling Championship 2024" ~ 2,
-           CompetitionName == "World Mixed Doubles Curling Championship 2025" ~ 3
-         ))
-```
-
-```{r}
-final_curling_beijing %>% 
-  group_by(PowerPlayPresent) %>% 
-  summarize(win_percentage = mean(USWin))
-```
-
-
-
-Partial Pooling for Q1 (DO NOT USE):
+Partial Pooling for Q1:
 
 ```{r}
 q1_prior <- glm(USWin ~ PowerPlay_5 + PowerPlay_6 + PowerPlay_7 + PowerPlay_8, 
@@ -179,28 +117,13 @@ ppq_1_data <- list(N = length(final_curling$CompetitionName), # number of matche
                    PowerPlay_6 = final_curling$PowerPlay_6,
                    PowerPlay_7 = final_curling$PowerPlay_7,
                    PowerPlay_8 = final_curling$PowerPlay_8,
+                   NumberEnds = final_curling$num_ends_center_6,
                    y = final_curling$USWin,
                    i = final_curling$CompetitionIndex, # for indexings sake
-                   u0 = 0,
-                   u1 = 0,
-                   u2 = 0,
-                   u3 = 0,
-                   u4 = 0,
-                   v0 = 1,
-                   v1 = 1,
-                   v2 = 1,
-                   v3 = 1,
-                   v4 = 1,
-                   alpha0 = 1,
-                   alpha1 = 1,
-                   alpha2 = 1,
-                   alpha3 = 1,
-                   alpha4 = 1,
-                   eta0 = 1,
-                   eta1 = 1,
-                   eta2 = 1,
-                   eta3 = 1,
-                   eta4 = 1
+                   u0 = 2.19,
+                   v0 = 0.05^2,
+                   alpha0 = 5,
+                   eta0 = 100
 )
 
 
@@ -210,68 +133,72 @@ fit <- stan(file = "partial_pooling_q1.stan",
             data = ppq_1_data, 
             chains = 4, 
             warmup = 1000,
-            iter = 2000,
-            control = list(adapt_delta = 0.999))
-```
-
-# Partial Pooling #1 Version 2 (THIS WAS USED)
-
-```{r}
-ppq_1_data_v2 <- list(N = length(final_curling$CompetitionName), # number of matches
-                   k = length(unique(final_curling$CompetitionName)), # Number of competitions
-                   PowerPlayPresent = final_curling$PowerPlayPresent,
-                   y = final_curling$USWin,
-                   i = final_curling$CompetitionIndex, # for indexings sake
-                   u0 = -0.30,
-                   u1 = 0,
-                   v0 = 1,
-                   v1 = 1,
-                   alpha0 = 1,
-                   alpha1 = 1,
-                   eta0 = 1,
-                   eta1 = 1
-)
-
-
-set.seed(355)
-
-fit_q1 <- stan(file = "partial_pooling_q1_v2.stan", 
-            data = ppq_1_data_v2, 
-            chains = 4, 
-            warmup = 1000,
-            iter = 8000,
-            control = list(adapt_delta = 0.999,
-                           max_treedepth = 16))
+            iter = 4000,
+            control = list(adapt_delta = 0.95))
 ```
 
 ```{r}
-bulk_ess_beta0 <- vector(mode = "double", length = 3)
-bulk_ess_beta1 <- vector(mode = "double", length = 3)
+traceplot(fit, pars = "beta0")
+traceplot(fit, pars = "beta1")
+traceplot(fit, pars = "beta2")
+traceplot(fit, pars = "beta3")
+traceplot(fit, pars = "beta4")
+traceplot(fit, pars = "beta5")
+```
 
-for (i in 1:3) {
-  bulk_ess_beta0[i] <- ess_bulk(extract(fit_q1, 
+```{r}
+bulk_ess_beta0 <- vector(mode = "double", length = 4)
+
+for (i in 1:4) {
+  bulk_ess_beta0[i] <- ess_bulk(extract(fit, 
                                         pars = "beta0", permuted = FALSE)[,,i])
-  bulk_ess_beta1[i] <- ess_bulk(extract(fit_q1, 
-                                        pars = "beta1", permuted = FALSE)[,,i])
 }
 
-rhat_beta0 <- vector(mode = "double", length = 3)
-rhat_beta1 <- vector(mode = "double", length = 3)
+bulk_ess_beta1 <- ess_bulk(extract(fit, 
+                                        pars = "beta1", permuted = FALSE)[,,1])
+bulk_ess_beta2 <- ess_bulk(extract(fit, 
+                                        pars = "beta2", permuted = FALSE)[,,1])
+bulk_ess_beta3 <- ess_bulk(extract(fit, 
+                                        pars = "beta3", permuted = FALSE)[,,1])
+bulk_ess_beta4 <- ess_bulk(extract(fit, 
+                                        pars = "beta4", permuted = FALSE)[,,1])
+bulk_ess_beta5 <- ess_bulk(extract(fit, 
+                                        pars = "beta5", permuted = FALSE)[,,1])
 
-for (i in 1:3) {
-  rhat_beta0[i] <- Rhat(extract(fit_q1, pars = "beta0", 
-                                permuted = FALSE)[,,i])
-  rhat_beta1[i] <- Rhat(extract(fit_q1, pars = "beta1", 
+bulk_ess_beta0
+bulk_ess_beta1
+bulk_ess_beta2
+bulk_ess_beta3
+bulk_ess_beta4
+bulk_ess_beta5
+
+rhat_beta0 <- vector(mode = "double", length = 4)
+
+for (i in 1:4) {
+  rhat_beta0[i] <- Rhat(extract(fit, pars = "beta0", 
                                 permuted = FALSE)[,,i])
 }
 
+rhat_beta1 <- Rhat(extract(fit, pars = "beta1", 
+                                permuted = FALSE)[,,1])
+rhat_beta2 <- Rhat(extract(fit, pars = "beta2", 
+                                permuted = FALSE)[,,1])
+rhat_beta3 <- Rhat(extract(fit, pars = "beta3", 
+                                permuted = FALSE)[,,1])
+rhat_beta4 <- Rhat(extract(fit, pars = "beta4", 
+                                permuted = FALSE)[,,1])
+rhat_beta5 <- Rhat(extract(fit, pars = "beta5", 
+                                permuted = FALSE)[,,1])
 
+rhat_beta0
+rhat_beta1
+rhat_beta2
+rhat_beta3
+rhat_beta4
+rhat_beta5
 
-traceplot(fit_q1, pars = "beta0")
-traceplot(fit_q1, pars = "beta1")
-
-print(fit_q1, pars = c("beta0", "beta1"))
-print(fit_q1, pars = c("exp_beta0", "exp_beta1"))
+print(fit, pars = c("beta0", "beta1", "beta2", "beta3", "beta4", "beta5"))
+print(fit, pars = c("exp_beta0", "exp_beta1", "exp_beta2", "exp_beta3", "exp_beta4", "exp_beta5"))
 ```
 
 
