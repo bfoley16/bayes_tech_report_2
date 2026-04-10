@@ -1,0 +1,130 @@
+---
+title: "Prior Creation"
+format: html
+editor: source
+---
+
+# Read in the Data
+
+```{r}
+competition <- read_csv("Competition.csv")
+ends <- read_csv("Ends.csv")
+games <- read_csv("Games.csv")
+stones <- read_csv("Stones.csv")
+competitors <- read_csv("Competitors.csv")
+teams <- read_csv("Teams.csv")
+```
+
+# Stone Wrangling
+
+```{r}
+canada_stones <- stones %>% 
+  filter(TeamID == 10) %>% # filter to canada
+  select(CompetitionID, SessionID, GameID, EndID, TeamID, Points) %>% 
+  group_by(CompetitionID, SessionID, GameID, EndID) %>% 
+  summarize(any0 = ifelse(0 %in% Points, 1, 0),
+            avg_points = round(mean(Points))) %>% 
+  mutate(Points = case_when(
+    any0 != 0 ~ 0,
+    any0 == 0 ~ avg_points
+  )) %>% 
+  ungroup() %>% 
+  select(CompetitionID, SessionID, GameID, EndID, Points)
+```
+
+# End Wrangling
+
+```{r}
+canada_ends <- ends %>% 
+  filter(TeamID == 10) %>% # filter to Canada
+  select(-Result, TeamID) %>% 
+  mutate(PowerPlay = if_else(is.na(PowerPlay),FALSE,TRUE))
+```
+
+# Game Wrangling
+
+```{r}
+canada_games <- games %>% 
+  filter((TeamID1 == 10) | (TeamID2 == 10)) %>% # filter to Canada
+  mutate(CanadaWin = case_when(
+    (NOC1 == "CAN") & (Winner == 1) ~ 1,
+    (NOC1 != "CAN") & (Winner == 1) ~ 0,
+    (NOC2 == "CAN") & (Winner == 0) ~ 1,
+    (NOC2 != "CAN") & (Winner == 0) ~ 0
+  )) %>% 
+  select(CompetitionID, SessionID, GameID, CanadaWin)
+```
+
+# Joining the Data
+
+```{r}
+canada_curling <- competition %>% 
+  select(-Place, -Venue) %>% 
+  right_join(canada_games, by = join_by(CompetitionID == CompetitionID)) %>% 
+  right_join(canada_ends, by = join_by(CompetitionID == CompetitionID, SessionID == SessionID, GameID == GameID)) %>% 
+  left_join(canada_stones, by = join_by(CompetitionID == CompetitionID, SessionID == SessionID, GameID == GameID, EndID == EndID)) %>% 
+  relocate(EndID, .after = GameID) %>% 
+  group_by(CompetitionID, SessionID, GameID) %>% 
+  mutate(MatchID = cur_group_id(), .after = SessionID) %>% 
+  ungroup() %>% 
+  select(-CompetitionID, -SessionID, -GameID, -TeamID) %>% 
+  mutate(Success = ifelse((Points > 2), 1, 0))
+```
+
+# Replicate Wrangling Done to USA
+
+```{r}
+successful_powerplays_canada <- canada_curling %>% 
+  # consider only powerplays
+  filter(PowerPlay) %>% 
+  # create a PowerPlaySuccessful variable
+  mutate(PowerPlaySuccessful = if_else((Success == 1), TRUE, FALSE)) %>% 
+  select(CompetitionName, MatchID, PowerPlaySuccessful)
+
+n_successful_non_powerplays_canada <- canada_curling %>% 
+  # consider only non powerplays
+  filter(!PowerPlay) %>% 
+  select(!c(PowerPlay, Points)) %>% 
+  group_by(CompetitionName, MatchID) %>% 
+  # count how many successful non powerplays there were per match
+  summarize(SuccessfulNonPowerPlays = sum(Success))
+  
+final_curling_canada <- canada_curling %>% 
+  select(!Success) %>% 
+  group_by(CompetitionName, MatchID) %>% 
+  mutate(number_of_ends = max(EndID)) %>% 
+  # pivot so there's one row per match. 
+  # information about powerplay and points go to a column per end
+  pivot_wider(
+    names_from = "EndID",
+    values_from = c("PowerPlay", "Points"),
+    values_fill = list("PowerPlay" = FALSE, "Points" = 0)
+  ) %>% 
+  # determine if there's at least one powerplay in a match
+  mutate(
+    PowerPlayPresent = 
+      if_else((PowerPlay_1 | PowerPlay_2 | PowerPlay_3 | PowerPlay_4 | 
+                 PowerPlay_5 | PowerPlay_6 | PowerPlay_7 | PowerPlay_8 | 
+                 PowerPlay_9), TRUE, FALSE)
+  ) %>% 
+  # add on information regarding successful powerplays
+  left_join(successful_powerplays, 
+            by = join_by("CompetitionName" == "CompetitionName", 
+                         "MatchID" == "MatchID")) %>% 
+  # add on information regarding number of successful non powerplays
+  left_join(n_successful_non_powerplays, 
+            by = join_by("CompetitionName" == "CompetitionName", 
+                         "MatchID" == "MatchID")) %>% 
+  # turn NA values from lack of powerplay in match to FALSE, 
+  # create index for competition name
+  mutate(PowerPlaySuccessful = 
+           if_else(is.na(PowerPlaySuccessful), FALSE, PowerPlaySuccessful),
+         CompetitionIndex = case_when(
+           CompetitionName == "World Mixed Doubles Curling Championship 2023" ~ 1,
+           CompetitionName == "World Mixed Doubles Curling Championship 2024" ~ 2,
+           CompetitionName == "World Mixed Doubles Curling Championship 2025" ~ 3
+         ))
+```
+
+
+
