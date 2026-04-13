@@ -81,13 +81,15 @@ successful_powerplays_canada <- canada_curling %>%
   mutate(PowerPlaySuccessful = if_else((Success == 1), TRUE, FALSE)) %>% 
   select(CompetitionName, MatchID, PowerPlaySuccessful)
 
+mean(n_successful_non_powerplays_canada$SuccessfulNonPowerPlays)
+
 n_successful_non_powerplays_canada <- canada_curling %>% 
   # consider only non powerplays
   filter(!PowerPlay) %>% 
   select(!c(PowerPlay, Points)) %>% 
   group_by(CompetitionName, MatchID) %>% 
   # count how many successful non powerplays there were per match
-  summarize(SuccessfulNonPowerPlays = sum(Success))
+  summarize(SuccessfulNonPowerPlays = sum(Success) - 6)
   
 final_curling_canada <- canada_curling %>% 
   select(!Success) %>% 
@@ -194,6 +196,21 @@ final_curling_canada %>%
   ungroup() %>% 
   group_by(number_of_ends) %>% 
   summarize(prop_victory = mean(CanadaWin))
+```
+# Calculating Priors for Q2 - Betas 1:4 are all pre-calced by Bridget thanks Bridget!
+```{r}
+#B0 
+final_curling_canada %>% 
+    filter(PowerPlaySuccessful == F && SuccessfulNonPowerPlays == 0)
+
+#B5
+final_curling_canada %>% 
+    filter(PowerPlaySuccessful == T)
+#22/41 = 0.54
+
+
+#B6
+mean(final_curling_canada$SuccessfulNonPowerPlays)
 ```
 
 

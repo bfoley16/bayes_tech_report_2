@@ -1,0 +1,345 @@
+---
+title: "Rcode"
+format: 
+  html:
+      embed-resources: true
+---
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+library(rstan)
+
+curlin <- read_csv("curling.csv")
+
+
+#Potential data cleaning / Priors from Beijing
+Beijing <- curlin %>% 
+  filter(CompetitionName == "Beijing 2022 Olympic Winter Games")
+mean(Beijing$Points) #3.22 average score of intentions
+Powerplay <- Beijing %>% filter(PowerPlay == T)
+length(Beijing$PowerPlay) / 
+  length(Powerplay$PowerPlay)  
+# 0.125 Powerplays per year 
+# (Dumb code and dumber user pp per year doesnt even matter)
+
+curlin_excised <- curlin %>% 
+  filter(!(CompetitionName %in% "Beijing 2022 Olympic Winter Games"))
+
+```
+
+```{r}
+# check how many observations we should have (41)
+curlin %>% 
+  group_by(CompetitionName) %>% 
+  summarize(num_matches = max(MatchID))
+
+# create a new variable for successful shot 
+# (deemed a Points score of higher than 2)
+curlin <- curlin %>% mutate(Success = ifelse((Points > 2), 1, 0))
+
+successful_powerplays <- curlin %>% 
+  # consider only powerplays
+  filter(PowerPlay) %>% 
+  # create a PowerPlaySuccessful variable
+  mutate(PowerPlaySuccessful = if_else((Success == 1), TRUE, FALSE)) %>% 
+  select(CompetitionName, MatchID, PowerPlaySuccessful)
+
+n_successful_non_powerplays <- curlin %>% 
+  # consider only non powerplays
+  filter(!PowerPlay) %>% 
+  select(!c(PowerPlay, Points)) %>% 
+  group_by(CompetitionName, MatchID) %>% 
+  # count how many successful non powerplays there were per match
+  summarize(SuccessfulNonPowerPlays = sum(Success) - 6)
+  
+final_curling <- curlin %>% 
+  select(!Success) %>% 
+  group_by(CompetitionName, MatchID) %>% 
+  mutate(number_of_ends = max(EndID),
+         num_ends_center_6 = number_of_ends - 6) %>% 
+  # pivot so there's one row per match. 
+  # information about powerplay and points go to a column per end
+  pivot_wider(
+    names_from = "EndID",
+    values_from = c("PowerPlay", "Points"),
+    values_fill = list("PowerPlay" = FALSE, "Points" = 0)
+  ) %>% 
+  # determine if there's at least one powerplay in a match
+  mutate(
+    PowerPlayPresent = 
+      if_else((PowerPlay_1 | PowerPlay_2 | PowerPlay_3 | PowerPlay_4 | 
+                 PowerPlay_5 | PowerPlay_6 | PowerPlay_7 | PowerPlay_8 | 
+                 PowerPlay_9), TRUE, FALSE)
+  ) %>% 
+  # determine if there's a PowerPlay in ends 1 through 5
+  mutate(PowerPlay_1through5 = 
+           if_else((PowerPlay_1 | PowerPlay_2 | PowerPlay_3 | PowerPlay_4 | 
+                 PowerPlay_5), TRUE, FALSE)) %>% 
+  # add on information regarding successful powerplays
+  left_join(successful_powerplays, 
+            by = join_by("CompetitionName" == "CompetitionName", 
+                         "MatchID" == "MatchID")) %>% 
+  # add on information regarding number of successful non powerplays
+  left_join(n_successful_non_powerplays, 
+            by = join_by("CompetitionName" == "CompetitionName", 
+                         "MatchID" == "MatchID")) %>% 
+  # turn NA values from lack of powerplay in match to FALSE, 
+  # create index for competition name
+  mutate(PowerPlaySuccessful = 
+           if_else(is.na(PowerPlaySuccessful), FALSE, PowerPlaySuccessful),
+         CompetitionIndex = case_when(
+           CompetitionName == "Beijing 2022 Olympic Winter Games" ~ 1,
+           CompetitionName == "World Mixed Doubles Curling Championship 2023" ~ 2,
+           CompetitionName == "World Mixed Doubles Curling Championship 2024" ~ 3,
+           CompetitionName == "World Mixed Doubles Curling Championship 2025" ~ 4
+         ))
+```
+
+```{r}
+final_curling %>% 
+  summarize_at(vars(starts_with("PowerPlay_")), mean)
+```
+
+Partial Pooling for Q1:
+
+```{r}
+
+ppq_1_data <- list(N = length(final_curling$CompetitionName), # number of matches
+                   k = length(unique(final_curling$CompetitionName)), # Number of competitions
+                   PowerPlay_5 = final_curling$PowerPlay_5,
+                   PowerPlay_6 = final_curling$PowerPlay_6,
+                   PowerPlay_7 = final_curling$PowerPlay_7,
+                   PowerPlay_8 = final_curling$PowerPlay_8,
+                   NumberEnds = final_curling$num_ends_center_6,
+                   y = final_curling$USWin,
+                   i = final_curling$CompetitionIndex, # for indexings sake
+                   u0 = 2.19,
+                   v0 = 0.05^2,
+                   alpha0 = 5,
+                   eta0 = 100
+)
+
+
+set.seed(454)
+
+fit <- stan(file = "partial_pooling_q1.stan", 
+            data = ppq_1_data, 
+            chains = 4, 
+            warmup = 1000,
+            iter = 4000,
+            control = list(adapt_delta = 0.95))
+```
+
+```{r}
+traceplot(fit, pars = "beta0")
+traceplot(fit, pars = "beta1")
+traceplot(fit, pars = "beta2")
+traceplot(fit, pars = "beta3")
+traceplot(fit, pars = "beta4")
+traceplot(fit, pars = "beta5")
+```
+
+```{r}
+bulk_ess_beta0 <- vector(mode = "double", length = 4)
+
+for (i in 1:4) {
+  bulk_ess_beta0[i] <- ess_bulk(extract(fit, 
+                                        pars = "beta0", permuted = FALSE)[,,i])
+}
+
+bulk_ess_beta1 <- ess_bulk(extract(fit, 
+                                        pars = "beta1", permuted = FALSE)[,,1])
+bulk_ess_beta2 <- ess_bulk(extract(fit, 
+                                        pars = "beta2", permuted = FALSE)[,,1])
+bulk_ess_beta3 <- ess_bulk(extract(fit, 
+                                        pars = "beta3", permuted = FALSE)[,,1])
+bulk_ess_beta4 <- ess_bulk(extract(fit, 
+                                        pars = "beta4", permuted = FALSE)[,,1])
+bulk_ess_beta5 <- ess_bulk(extract(fit, 
+                                        pars = "beta5", permuted = FALSE)[,,1])
+
+bulk_ess_beta0
+bulk_ess_beta1
+bulk_ess_beta2
+bulk_ess_beta3
+bulk_ess_beta4
+bulk_ess_beta5
+
+rhat_beta0 <- vector(mode = "double", length = 4)
+
+for (i in 1:4) {
+  rhat_beta0[i] <- Rhat(extract(fit, pars = "beta0", 
+                                permuted = FALSE)[,,i])
+}
+
+rhat_beta1 <- Rhat(extract(fit, pars = "beta1", 
+                                permuted = FALSE)[,,1])
+rhat_beta2 <- Rhat(extract(fit, pars = "beta2", 
+                                permuted = FALSE)[,,1])
+rhat_beta3 <- Rhat(extract(fit, pars = "beta3", 
+                                permuted = FALSE)[,,1])
+rhat_beta4 <- Rhat(extract(fit, pars = "beta4", 
+                                permuted = FALSE)[,,1])
+rhat_beta5 <- Rhat(extract(fit, pars = "beta5", 
+                                permuted = FALSE)[,,1])
+
+rhat_beta0
+rhat_beta1
+rhat_beta2
+rhat_beta3
+rhat_beta4
+rhat_beta5
+
+print(fit, pars = c("beta0", "beta1", "beta2", "beta3", "beta4", "beta5"))
+print(fit, pars = c("exp_beta0", "exp_beta1", "exp_beta2", "exp_beta3", "exp_beta4", "exp_beta5"))
+```
+
+
+
+Partial Pooling for Q2.
+
+Do these results (Odds of winning a curling match) vary by whether or not the play (power or otherwise) “failed in its intended result”?
+Beta hyperparameters need to be done properly
+$$
+Y_{ij} | \pi_{ij},\beta_0, \beta_1, \beta_2 &\sim Bernoulli(\pi_{ij}) \\
+\log(\frac{\pi_{ij}}{1-\pi_{ij}}) &= \beta_0 + \beta_1 \cdot PowerPlay + \beta_2 \cdot Success \\
+\pi_{ij} &= invlogit(\beta_0 + \beta_1 \cdot PowerPlay_{ij} + \beta_2 \cdot Success_{ij})
+\\
+B_0 &\sim N(m_0, s_0^2) \\
+B_1 &\sim N(m_1, s_1^2) \\
+B_2 &\sim N(m_2, s_2^2) \\
+
+m_0 & \sim \text{N}(u_0, v_0^2) \\
+m_1 & \sim \text{N}(u_1, v_1^2) \\
+m_2 & \sim \text{N}(u_2, v_2^2) \\
+
+1 / s_0^2 & \sim \text{Gamma}(\alpha_0, \beta_0) \\
+1 / s_1^2 & \sim \text{Gamma}(\alpha_1, \beta_1) \\
+1 / s_2^2 & \sim \text{Gamma}(\alpha_2, \beta_2) \\
+
+
+
+
+$$
+
+
+```{r}
+
+
+PPQ2Data <- list(pp1 = final_curling$PowerPlay_5,
+                 pp2 = final_curling$PowerPlay_6, # 6-7!
+                 pp3 = final_curling$PowerPlay_7,
+                 pp4 = final_curling$PowerPlay_8,
+                 x5 = final_curling$PowerPlaySuccessful,
+                 x6 = final_curling$SuccessfulNonPowerPlays,
+                 y = final_curling$USWin,
+                 N = length(final_curling$CompetitionName), #sets
+                 k = length(unique(final_curling$CompetitionName)),# Number of competitions
+                 i = final_curling$CompetitionIndex, # for indexings sake
+                 u0 = 0.6931472,
+                 v0 = 0.025,
+                 
+)
+
+fit <- stan(file = "PPQ2.stan", 
+            data = PPQ2Data, 
+            chains = 4, 
+            warmup = 1000,
+            iter = 2000,
+            control = list(adapt_delta = 0.995)
+            )
+
+
+traceplot(fit, pars = "beta0")
+traceplot(fit, pars = "beta1")
+traceplot(fit, pars = "beta2")
+traceplot(fit, pars = "beta3")
+traceplot(fit, pars = "beta4")
+traceplot(fit, pars = c("beta5", "beta6"))
+traceplot(fit, pars = "beta6")
+
+
+```
+
+```{r}
+print(fit)
+
+final_curling %>% 
+    filter(PowerPlaySuccessful == F && SuccessfulNonPowerPlays == 0)
+# 8 / 41 ~ 20%
+# in odds: .2 / .1 = 2
+# log(2) = 0.6931472 nice log odds
+#upper bounds log(2.1) = 0.7419373, lower bounds log(1.9) = 0.6418539
+# centered at 0.69, sd = 0.025 Just picked because
+# sd = 0.025 = alpha / beta
+# alpha = 0.025*beta
+# = 1000 * 0.025 = 25
+#Mode = (alpha - 1)/ beta
+#0.024 = (0.025 * beta) -1 / beta
+#0.024Beta = (0.025 * beta) -1
+# -1 = -0.001beta
+#beta = 1000
+bulk_ess_beta0 <- vector(mode = "double", length = 4)
+
+
+for (i in 1:4) {
+  bulk_ess_beta0[i] <- ess_bulk(extract(fit, 
+                                        pars = "beta0", permuted = FALSE)[,,i])
+}
+
+bulk_ess_beta1 <- ess_bulk(extract(fit, 
+                                        pars = "beta1", permuted = FALSE)[,,1])
+bulk_ess_beta2 <- ess_bulk(extract(fit, 
+                                        pars = "beta2", permuted = FALSE)[,,1])
+bulk_ess_beta3 <- ess_bulk(extract(fit, 
+                                        pars = "beta3", permuted = FALSE)[,,1])
+bulk_ess_beta4 <- ess_bulk(extract(fit, 
+                                        pars = "beta4", permuted = FALSE)[,,1])
+bulk_ess_beta5 <- ess_bulk(extract(fit, 
+                                        pars = "beta5", permuted = FALSE)[,,1])
+bulk_ess_beta6 <- ess_bulk(extract(fit, 
+                                        pars = "beta6", permuted = FALSE)[,,1])
+
+bulk_ess_beta0
+bulk_ess_beta1
+bulk_ess_beta2
+bulk_ess_beta3
+bulk_ess_beta4
+bulk_ess_beta5
+bulk_ess_beta6
+
+rhat_beta0 <- vector(mode = "double", length = 4)
+
+for (i in 1:4) {
+  rhat_beta0[i] <- Rhat(extract(fit, pars = "beta0", 
+                                permuted = FALSE)[,,i])
+}
+
+rhat_beta1 <- Rhat(extract(fit, pars = "beta1", 
+                                permuted = FALSE)[,,1])
+rhat_beta2 <- Rhat(extract(fit, pars = "beta2", 
+                                permuted = FALSE)[,,1])
+rhat_beta3 <- Rhat(extract(fit, pars = "beta3", 
+                                permuted = FALSE)[,,1])
+rhat_beta4 <- Rhat(extract(fit, pars = "beta4", 
+                                permuted = FALSE)[,,1])
+rhat_beta5 <- Rhat(extract(fit, pars = "beta5", 
+                                permuted = FALSE)[,,1])
+rhat_beta6 <- Rhat(extract(fit, pars = "beta6", 
+                                permuted = FALSE)[,,1])
+
+rhat_beta0
+rhat_beta1
+rhat_beta2
+rhat_beta3
+rhat_beta4
+rhat_beta5
+rhat_beta6
+
+#print(fit, pars = c("beta0", "beta1", "beta2", "beta3", "beta4", "beta5", "beta6"))
+
+```
+
+
+
