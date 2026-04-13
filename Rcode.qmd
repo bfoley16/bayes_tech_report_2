@@ -96,7 +96,6 @@ final_curling <- curlin %>%
          ))
 ```
 
-
 ```{r}
 final_curling %>% 
   summarize_at(vars(starts_with("PowerPlay_")), mean)
@@ -105,12 +104,6 @@ final_curling %>%
 Partial Pooling for Q1:
 
 ```{r}
-q1_prior <- glm(USWin ~ PowerPlay_5 + PowerPlay_6 + PowerPlay_7 + PowerPlay_8, 
-                data = final_curling_beijing, family = "binomial")
-
-q1_prior %>% 
-  summary()
-
 ppq_1_data <- list(N = length(final_curling$CompetitionName), # number of matches
                    k = length(unique(final_curling$CompetitionName)), # Number of competitions
                    PowerPlay_5 = final_curling$PowerPlay_5,
